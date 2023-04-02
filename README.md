@@ -21,6 +21,7 @@ When the shell quits, it forces the termination of all of it’s running or stop
 ### The Command Prompt: 
 The shell uses the colon (:) symbol as a prompt for each command line. The general syntax of a command line is: 
 > command [arg1 arg2 ...] [< inputfile] [> outputfile] [&] 
+
 where items in square brackets are optional. You can assume that a command is made up of words separated by spaces. 
 The special symbols <, > and & are recognized but they must be surrounded by spaces like other words. 
 If the command is to be executed in the background, the last word must be &. 
@@ -39,13 +40,13 @@ The shell expands any instance of $$ in a command into the process ID of the she
 ### Built-in Commands: 
 exit, cd, and status. All other built-in commands are simply passed on to a member of the exec() family of functions. If the user tries to run one of these built-in commands in the background with the & option, the shell ignores that option and runs the command in the foreground anyway.
 
-exit
+1. exit
 The exit command exits the shell. It takes no arguments. When this command is run, it kills any other processes or jobs that the shell has started before it terminates itself.
 
-cd
+2. cd
 The cd command changes the working directory of the shell. By itself - with no arguments - it changes to the directory specified in the HOME environment variable This is typically not the location where the shell was executed from, unless the shell executable is located in the HOME directory, in which case these are the same. This command can also take one argument: the path of a directory to change to. The cd command supports both absolute and relative paths.
 
-status
+3. status
 The status command prints out either the exit status or the terminating signal of the last foreground process ran by your shell. If this command is run before any foreground command is run, then it simply returns the exit status 0.
 
 ### Executing Other Commands: 
@@ -55,14 +56,14 @@ the shell executes any commands other than the 3 built-in command by using fork(
 Use dup2() for input or output redirection. The shell performs redirection before using exec() to run the command. An input file redirected via stdin is opened for reading only; if the shell cannot open the file for reading, it prints an error message and set the exit status to 1 (but don't exit the shell). Similarly, an output file redirected via stdout is opened for writing only; it is truncated if it already exists or created if it does not exist. If the cannot open the output file it prints an error message and set the exit status to 1 (but don't exit the shell). Both stdin and stdout for a command can be redirected at the same time.
 
 ### Signals SIGINT & SIGTSTP
-SIGINT: A CTRL-C command from the keyboard sends a SIGINT signal to the parent process and all children at the same time (this is a built-in part of Linux).
+1. SIGINT: A CTRL-C command from the keyboard sends a SIGINT signal to the parent process and all children at the same time (this is a built-in part of Linux).
 The shell ignores SIGINT
 Any children running as background processes also ignores SIGINT
 A child running as a foreground process terminates itself when it receives SIGINT
 The parent does not attempt to terminate the foreground child process; instead the foreground child (if any) terminates itself on receipt of this signal.
 If a child foreground process is killed by a signal, the parent immediately print out the number of the signal that killed it's foreground child process (see the example) before prompting the user for the next command.
 
-SIGTSTP: A CTRL-Z command from the keyboard sends a SIGTSTP signal to your parent shell process and all children at the same time (this is a built-in part of Linux).
+2. SIGTSTP: A CTRL-Z command from the keyboard sends a SIGTSTP signal to your parent shell process and all children at the same time (this is a built-in part of Linux).
 A child, if any, running as a foreground process ignores SIGTSTP.
 Any children running as background process also ignores SIGTSTP.
 When the parent process running the shell receives SIGTSTP, the shell displays an informative message immediately if it's sitting at the prompt, or immediately after any currently running foreground process has terminated. The shell then enters a state where subsequent commands can no longer be run in the background. In this state, the & operator is simply ignored, i.e., all such commands are run as if they were foreground processes. If the user sends SIGTSTP again, then the shell displays another informative message immediately after any currently running foreground process terminates. The shell then returns back to the normal condition where the & operator is once again honored for subsequent commands, allowing them to be executed in the background.
